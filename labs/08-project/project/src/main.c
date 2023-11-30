@@ -23,6 +23,9 @@
 #include "timer.h"          // Timer library for AVR-GCC
 #include <uart.h>           // Peter Fleury's UART library
 #include <stdlib.h>         // C library. Needed for number conversions
+#include <time.h>           // 
+#include <cmd.h>            // 
+#include <moist_sens.h>     //
 
 
 /* Function definitions ----------------------------------------------*/
@@ -36,6 +39,8 @@ int main(void)
 {
     // Initialize USART to asynchronous, 8N1, 9600
     uart_init(UART_BAUD_SELECT(9600, F_CPU));
+
+    moist_sens_init();
     
     // Configure 16-bit Timer/Counter1 to transmit UART data
     // Set prescaler to 262 ms and enable overflow interrupt
@@ -47,8 +52,8 @@ int main(void)
     sei();
 
     // Put strings to ringbuffer for transmitting via UART
-    uart_puts("Print one line... ");
-    uart_puts("done\r\n");
+    // uart_puts("Print one line... ");
+    // uart_puts("done\r\n");
 
     // Infinite loop
     while (1)
@@ -68,37 +73,6 @@ int main(void)
  **********************************************************************/
 ISR(TIMER1_OVF_vect)
 {
-    // Transmit UART string(s)
-    // uart_puts("Kawasaki Motorky jsou nejlepší!\r\n");
-
-    uint8_t value;
-    uint8_t confirmation;
-    char string[8];  // String for converted numbers by itoa()
-
-    value = uart_getc();
-    confirmation = uart_getc();
-    if (confirmation == 13) {  // Data available from UART
-        // Display ASCII code of received character
-        uart_putc(value);
-        if (value == 63) {
-            uart_puts("Help: ");
-        }
-
-
-        itoa(value, string, 10);
-        uart_puts("\tDec: ");
-        uart_puts(string);
-
-        itoa(value, string, 16);
-        uart_puts("\tHex: 0x");
-        uart_puts(string);
-        itoa(value, string, 2);
-        uart_puts("\tBin: 0b0");
-        uart_puts(string);
-
-        uart_putc('\n');
-
-
-    }
+    cmd_comm();
 
 }
