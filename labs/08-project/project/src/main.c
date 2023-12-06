@@ -74,5 +74,4 @@ int main(void)
 ISR(TIMER1_OVF_vect)
 {
     cmd_comm();
-
 }
